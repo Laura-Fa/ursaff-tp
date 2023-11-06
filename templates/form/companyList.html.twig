@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Entreprises trouvées</h1>
+
+<table>
+    <tr>
+        <th>Nom complet</th>
+        <th>Siren</th>
+        <th>Siret</th>
+        <th>Adresse</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+        <td>{{ item.nom_complet }}</td>
+        <td>{{ item.siren }}</td>
+        <td>{{ item.siege.siret }}</td>
+        <td>{{ item.siege.adresse }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    // Au clique sur une ligne du tableau, les informations de l'entreprise selectionnee sont envoyees au back pour enregistrement
+    document.querySelectorAll('table tr').forEach(function (row) {
+        row.addEventListener('click', function () {
+            let company = { name: row.querySelector('td:nth-child(1)').innerText, siren: row.querySelector('td:nth-child(2)').innerText, siret: row.querySelector('td:nth-child(3)').innerText, address: row.querySelector('td:nth-child(4)').innerText };
+            console.log(company);
+
+            var req = new XMLHttpRequest();
+            req.open('POST', 'http://127.0.0.1:8000/write-company-file', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.send(JSON.stringify(company));
+
+        });
+    });
+</script>
+
+{% endblock %}
