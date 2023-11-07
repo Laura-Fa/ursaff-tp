@@ -13,6 +13,7 @@ class CompanyFormController extends AbstractController
 {
 
     /**
+     * Creer le formulaire
      * Consommer l'API du gouvernement pour retourner la liste des entreprises correspondant a l'entree utilisateur
      *
      * @param Request $request
@@ -39,12 +40,12 @@ class CompanyFormController extends AbstractController
             $data = json_decode($content, true);
 
             // Retourner le resultat a la vue
-            return $this->render('form/companyList.html.twig', [
+            return $this->render('companyList.html.twig', [
                 'data' => $data['results'],
             ]);
         }
 
-        return $this->render('form/index.html.twig', [
+        return $this->render('form/companySearch.html.twig', [
             'form' => $form->createView(),
         ]);
     }
