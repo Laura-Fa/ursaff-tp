@@ -19,7 +19,7 @@ class CompanyFormController extends AbstractController
      * @param Request $request
      * @return void
      */
-    #[Route('/company-form', name: 'company-form')]
+    #[Route('/', name: 'company-form')]
     public function index(Request $request)
     {
         $form = $this->createForm(CompanyFormType::class);
@@ -39,9 +39,9 @@ class CompanyFormController extends AbstractController
             // Convertir le json en array
             $data = json_decode($content, true);
 
-            // Retourner le resultat a la vue
+            // Retourner le resultat a la vue (limite a 10 entreprises)
             return $this->render('companyList.html.twig', [
-                'data' => $data['results'],
+                'data' => array_slice($data['results'], 0, 10)
             ]);
         }
 

@@ -10,12 +10,17 @@
         <th>Siret</th>
         <th>Adresse</th>
     </tr>
+
     {% for item in data %}
     <tr>
         <td>{{ item.nom_complet }}</td>
         <td>{{ item.siren }}</td>
         <td>{{ item.siege.siret }}</td>
-        <td>{{ item.siege.adresse }}</td>
+        <td><span class="Num">{{ item.siege.numero_voie }}</span> <span class="Type_voie">{{ item.siege.type_voie }}
+            </span><span class="Voie">{{ item.siege.libelle_voie }}</span> <span class="Code_postal">{{
+                item.siege.code_postal }}</span> <span class="Ville">{{ item.siege.libelle_commune }}</span> <span
+                class="Latitude" hidden>{{ item.siege.latitude }}</span><span class="Longitude" hidden>{{
+                item.siege.longitude }}</span></td>
     </tr>
     {% endfor %}
 </table>
@@ -24,16 +29,31 @@
     // Au clique sur une ligne du tableau, les informations de l'entreprise selectionnee sont envoyees au back pour enregistrement
     document.querySelectorAll('table tr').forEach(function (row) {
         row.addEventListener('click', function () {
-            let company = { name: row.querySelector('td:nth-child(1)').innerText, siren: row.querySelector('td:nth-child(2)').innerText, siret: row.querySelector('td:nth-child(3)').innerText, address: row.querySelector('td:nth-child(4)').innerText };
+            let company = {
+                Raison_sociale: row.querySelector('td:nth-child(1)').innerText,
+                Siren: row.querySelector('td:nth-child(2)').innerText,
+                Adresse: {
+                    Num: isNaN(Number(row.querySelector('.Num').innerText)) ? 0 : Number(row.querySelector('.Num').innerText),
+                    Voie: row.querySelector('.Voie').innerText,
+                    Code_postal: row.querySelector('.Code_postal').innerText,
+                    Ville: row.querySelector('.Ville').innerText,
+                    GPS: {
+                        Latitude: row.querySelector('.Latitude').innerText,
+                        Longitude: row.querySelector('.Longitude').innerText,
+                    }
+                }
+            };
 
-            fetch('http://127.0.0.1:8000/write-company-file', {
+            console.log(company);
+
+            fetch('http://127.0.0.1:8000/save-in-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(company)
             })
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(response => console.log(response))
                 .catch((error) => console.log(error));
         });
