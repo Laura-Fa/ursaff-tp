@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpClient\HttpClient;
 use App\Form\SalaryFormType;
 
 class SalaryController extends AbstractController
@@ -14,23 +15,49 @@ class SalaryController extends AbstractController
     public function index(Request $request): Response
     {
         $form = $this->createForm(SalaryFormType::class);
-
+    
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$task` variable has also been updated
             $data = $form->getData();
-            // $salarynet = $data * 0.78;
+            
+            // Assurez-vous de récupérer la valeur correcte du salaire brut
+            $salaireBrut = $data['input'];
+    
+            $body = [
+                "situation" => [
+                    "salarié . contrat . salaire brut" => [
+                        "valeur" => $salaireBrut, // Utilisez la valeur du salaire brut ici
+                        "unité" => "€ / mois"
+                    ],
+                    "salarié . contrat" => "CDI"
+                ],
+                "expressions" => [
+                    "salarié . rémunération . net . à payer avant impôt"
+                ]
+            ];
+    
+            $client = HttpClient::create();
+            $response = $client->request('POST', 'https://mon-entreprise.urssaf.fr/api/v1/evaluate', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $body
+            ]);
+    
+            $content = $response->getContent();
+            $datas = json_decode($content, true);
 
-            // ... perform some action, such as saving the task to the database
-
-        return $this->json(['success', $data]);
+           // return $this->json($datas);
+    
+            return $this->render('Salary.html.twig',[
+                'data' => $datas['evaluate'],
+                ]); // Retourne les données récupérées à la vue
         }
-
+    
         return $this->render('salary/index.html.twig', [
             'controller_name' => 'SalaryController',
-             'form' => $form,
+            'form' => $form,
         ]);
-    }
+    }    
 
 }

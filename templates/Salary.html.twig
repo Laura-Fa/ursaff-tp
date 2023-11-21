@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1> Calculer le salaire d'un CDI </h1>
+
+<table>
+    <tr>
+        <th>Salaire net avant impôt</th>
+        <th>cotisations salariales</th>
+        <th>Coût employeur</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+        <td>{{ item.nodeValue }}</td>
+        <td>{{ dump(item.nodeValue)}}</td>
+        <td>{{ item.traversedVariables[0] }}</td> 
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
