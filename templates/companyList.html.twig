@@ -13,7 +13,9 @@
 
     {% for item in data %}
     <tr>
-        <td>{{ item.nom_complet }}</td>
+        <td>  <a href="{{ path('app_salary', {'siren': item.siren}) }}">
+                        {{ item.nom_complet }}
+                    </a></td>
         <td>{{ item.siren }}</td>
         <td>{{ item.siege.siret }}</td>
         <td><span class="Num">{{ item.siege.numero_voie }}</span> <span class="Type_voie">{{ item.siege.type_voie }}

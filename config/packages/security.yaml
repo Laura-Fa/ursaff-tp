@@ -19,7 +19,7 @@ security:
       security: false
     main:
       http_basic: ~
-      stateless: true
+      stateless: false
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
