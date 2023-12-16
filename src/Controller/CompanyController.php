@@ -29,6 +29,23 @@ class CompanyController extends AbstractController
     }
 
     /**
+     * Enregistrer dans un fichier et en session l'entreprise choisie
+     *
+     * @param Request $request
+     * @return Response
+     */
+    #[Route('/save-in-session', name: 'save_in_session', methods: 'POST')]
+    public function saveInSession(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        // Enregistrer l'entreprise dans la session
+        $session = $request->getSession();
+        $session->set('siren',  $data['Siren']);
+
+        return $this->createCompany($request);
+    }
+
+    /**
      * Retourne au format JSON ou CSV la liste des entreprises 
      *
      * @param Request $request
@@ -46,7 +63,7 @@ class CompanyController extends AbstractController
 
             // Récuperer les siren des entreprises
             $finder = new Finder();
-            $files = $finder->files()->in(__DIR__ . '/../../public/companies/');
+            $files = $finder->files()->in(__DIR__ . '/../../var/tmp/');
 
             $companiesFiles = [];
             foreach ($files as $file) {
@@ -75,7 +92,7 @@ class CompanyController extends AbstractController
     #[Route('/api/companies/{siren}', name: 'get_company', methods: 'GET')]
     public function getCompany(int $siren): Response
     {
-        $filePath = __DIR__ . '/../../public/companies/' . $siren . '.json';
+        $filePath = __DIR__ . '/../../var/tmp/' . $siren . '.json';
 
         if (!file_exists($filePath)) {
             return new Response("Aucune entreprise avec ce SIREN", 404);
@@ -118,7 +135,7 @@ class CompanyController extends AbstractController
             return new Response("Format JSON invalide ou donnee manquante", 400);
         }
 
-        $filePath = __DIR__ . '/../../public/companies/' . $data['Siren'] . '.json';
+        $filePath = __DIR__ . '/../../var/tmp/' . $data['Siren'] . '.json';
         // Verifier si l'entreprise existe deja
         if (file_exists($filePath)) {
             return new Response("Entreprise existe déjà ", 409);
@@ -158,7 +175,7 @@ class CompanyController extends AbstractController
             return new Response("Format JSON invalide ou donnee manquante", 400);
         }
 
-        $filePath = __DIR__ . '/../../public/companies/' . $siren . '.json';
+        $filePath = __DIR__ . '/../../var/tmp/' . $siren . '.json';
 
         if (!file_exists($filePath)) {
             return new Response("Aucune entreprise avec ce SIREN", 404);
@@ -188,7 +205,7 @@ class CompanyController extends AbstractController
     #[Route('/api/companies/{siren}', name: 'delete_company', methods: 'DELETE')]
     public function deleteCompany(int $siren): Response
     {
-        $filePath = __DIR__ . '/../../public/companies/' . $siren . '.json';
+        $filePath = __DIR__ . '/../../var/tmp/' . $siren . '.json';
 
         if (!file_exists($filePath)) {
             return new Response("Aucune entreprise avec ce SIREN", 404);

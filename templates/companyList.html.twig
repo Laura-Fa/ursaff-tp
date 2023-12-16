@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Entreprises trouvées</h1>
+
+<table>
+    <tr>
+        <th>Nom complet</th>
+        <th>Siren</th>
+        <th>Siret</th>
+        <th>Adresse</th>
+    </tr>
+
+    {% for item in data %}
+    <tr>
+        <td>  <a href="{{ path('app_salary', {'siren': item.siren}) }}">
+                        {{ item.nom_complet }}
+                    </a></td>
+        <td>{{ item.siren }}</td>
+        <td>{{ item.siege.siret }}</td>
+        <td><span class="Num">{{ item.siege.numero_voie }}</span> <span class="Type_voie">{{ item.siege.type_voie }}
+            </span><span class="Voie">{{ item.siege.libelle_voie }}</span> <span class="Code_postal">{{
+                item.siege.code_postal }}</span> <span class="Ville">{{ item.siege.libelle_commune }}</span> <span
+                class="Latitude" hidden>{{ item.siege.latitude }}</span><span class="Longitude" hidden>{{
+                item.siege.longitude }}</span></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    // Au clique sur une ligne du tableau, les informations de l'entreprise selectionnee sont envoyees au back pour enregistrement
+    document.querySelectorAll('table tr').forEach(function (row) {
+        row.addEventListener('click', function () {
+            let company = {
+                Raison_sociale: row.querySelector('td:nth-child(1)').innerText,
+                Siren: row.querySelector('td:nth-child(2)').innerText,
+                Adresse: {
+                    Num: isNaN(Number(row.querySelector('.Num').innerText)) ? 0 : Number(row.querySelector('.Num').innerText),
+                    Voie: row.querySelector('.Voie').innerText,
+                    Code_postal: row.querySelector('.Code_postal').innerText,
+                    Ville: row.querySelector('.Ville').innerText,
+                    GPS: {
+                        Latitude: row.querySelector('.Latitude').innerText,
+                        Longitude: row.querySelector('.Longitude').innerText,
+                    }
+                }
+            };
+
+            console.log(company);
+
+            fetch('http://127.0.0.1:8000/save-in-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(company)
+            })
+                .then(response => response.text())
+                .then(response => console.log(response))
+                .catch((error) => console.log(error));
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Résultats</h1>
+
+    <table>
+        <tr>
+            <th>Salaire Net (avant impôt) pour CDI</th>
+            <th>Gratification minimale de stage</th>
+            <th>Salaire Net (avant impôt) pour Alternant</th>
+            <th>Salaire Net (avant impôt) pour CDD</th>
+        </tr>
+
+        <tr>
+            <td>{% if type == 'cdi' %}
+                {{ data[0]['nodeValue'] }}
+            {% endif %}</td>
+            <td>{% if type == 'stage' %}
+                {{ data[0]['nodeValue'] }}
+            {% endif %}</td>
+            <td>{% if type == 'alternance' %}
+                {{ data[0]['nodeValue'] }}
+            {% endif %}</td>
+            <td>{% if type == 'alternance' %}
+                {{ data[0]['nodeValue'] }}
+            {% endif %}</td>
+        </tr>
+    </table>
+{% endblock %}
